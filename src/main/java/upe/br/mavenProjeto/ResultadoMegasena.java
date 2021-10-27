@@ -5,6 +5,9 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 	/**
 	
@@ -14,13 +17,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 	
 public class ResultadoMegasena {
 	/** URL que possui as dezenas sorteadas. */
-	private final static String URL = "http://loterias.caixa.gov.br/wps/portal/loterias/landing/megasena/";
-	
-	/** Marcação inicial para extrair as dezenas do retorno HTML. */
-	private final static String MARCA_INICIAL_RETORNO_NAO_UTIL = "<div class='resultado-loteria'>";
-	
-	/** Marcação final para extrair as dezenas do retorno HTML. */
-	private final static String MARCA_FINAL_RETORNO_NAO_UTIL = "</div>";
+	private final static String URL = "http://loterias.caixa.gov.br/wps/portal/loterias";
 
 	/**
 	* Método que se conecta ao site da CEF para obter as dezenas
@@ -29,7 +26,7 @@ public class ResultadoMegasena {
 	sorteada.
 	*/
 
-	public static String[] obtemUltimoResultado() {
+	public static Elements[] obtemUltimoResultado() {
 		//Criação do cliente HTTP que fará a conexão com o site
 		HttpClient httpclient = new DefaultHttpClient();
 		try {
@@ -56,15 +53,16 @@ public class ResultadoMegasena {
 	* @return array de Strings, onde cada elemento é uma dezena
 	sorteada.
 	*/
-	private static String[] obterDezenas(String html) {
+	private static Elements[] obterDezenas(String html) {
 		// Posição inicial de onde começam as dezenas
-		Integer parteInicial = html.indexOf(MARCA_INICIAL_RETORNO_NAO_UTIL) + MARCA_INICIAL_RETORNO_NAO_UTIL.length();
-		// Posição final de onde começam as dezenas
-		Integer parteFinal = html.indexOf(MARCA_FINAL_RETORNO_NAO_UTIL);
-		// Substring montada com base nas posições, com remoção de espaços.
-		String extracao = html.substring(parteInicial, parteFinal).replaceAll(" ", "");
-		// Criação de array, com base no método split(), separando por hifen.
-		String[] numeros = extracao.split("-");
-		return numeros;
+		Document doc = Jsoup.parse(html);
+		
+		Elements resultadoMegaSena = doc.getElementsByClass("resultado-loteria mega-sena");
+		Elements resultadoLotoFacil = doc.getElementsByClass("simple-table lotofacil");
+		Elements resultadoQuina = doc.getElementsByClass("resultado-loteria quina");
+		
+		Elements[] resultadoLoteria = {resultadoMegaSena, resultadoLotoFacil, resultadoQuina};
+		
+		return resultadoLoteria;
 	}
 }

@@ -1,6 +1,7 @@
 package upe.br.mavenProjeto;
 
 import org.junit.Test;
+import org.jsoup.select.Elements;
 
 import junit.framework.TestCase;
 
@@ -12,7 +13,7 @@ public class ResultadoMegasenaTest extends TestCase {
 	*/
 	@Test
 	public void testObtemUltimoResultado() {
-		String[] ultimoResultado = ResultadoMegasena.obtemUltimoResultado();
+		Elements[] ultimoResultado = ResultadoMegasena.obtemUltimoResultado();
 		assertNotNull(ultimoResultado);
 		assertTrue( ultimoResultado.length == NUMERO_DE_DEZENAS );
 	}
